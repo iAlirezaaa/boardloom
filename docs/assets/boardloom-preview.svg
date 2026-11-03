@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="955" viewBox="0 0 1700 955" role="img" aria-labelledby="title desc">
+<title id="title">Boardloom — Visual Production Workspace</title>
+<desc id="desc">Visual preview derived from Boardloom's sample storyboard board. Three connected image cards with status-colored borders, a workflow sidebar and an asset inspector.</desc>
+<defs>
+ <pattern id="dotgrid" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="0.8" fill="#384054" opacity=".55"/></pattern>
+ <linearGradient id="brand" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#e1d4ff"/><stop offset="1" stop-color="#9984d4"/></linearGradient>
+ <filter id="card-shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#07080f" flood-opacity=".35"/></filter>
+ <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#9791b9" stroke-width="1.6"/></marker>
+</defs>
+<rect x="0" y="0" width="1700" height="955" rx="0" fill="#151720" stroke="none" stroke-width="1"/>
+<rect x="0" y="0" width="252" height="955" rx="0" fill="#14151c" stroke="none" stroke-width="1"/>
+<rect x="252" y="0" width="1080" height="66" rx="0" fill="#171820" stroke="none" stroke-width="1"/>
+<rect x="1332" y="0" width="368" height="955" rx="0" fill="#1b1c24" stroke="none" stroke-width="1"/>
+<path d="M252 0V955 M1332 0V955 M252 66H1700" stroke="#30313e" stroke-width="1.2"/>
+<rect x="26" y="22" width="42" height="42" rx="11" fill="url(#brand)" stroke="none" stroke-width="1"/>
+<text x="36" y="52" fill="#2a2941" font-family="Inter,Arial,sans-serif" font-size="29" font-weight="800" >B</text>
+<text x="80" y="44" fill="#f4f1fb" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="750" >boardloom</text>
+<text x="80" y="61" fill="#9795a5" font-family="Inter,Arial,sans-serif" font-size="8" font-weight="600" >V I S U A L   W O R K S P A C E</text>
+<text x="27" y="122" fill="#88899b" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="650" >W O R K S P A C E</text>
+<rect x="20" y="143" width="180" height="38" rx="8" fill="#232531" stroke="#323444" stroke-width="1"/>
+<text x="34" y="168" fill="#f4f1fb" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="550" >Orion · Short Film</text>
+<rect x="207" y="143" width="31" height="38" rx="8" fill="#232531" stroke="#323444" stroke-width="1"/>
+<text x="215" y="168" fill="#cbc8dc" font-family="Inter,Arial,sans-serif" font-size="21" font-weight="400" >+</text>
+<text x="27" y="240" fill="#88899b" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="650" >B O A R D S   1</text>
+<rect x="17" y="259" width="219" height="57" rx="10" fill="#302e42" stroke="none" stroke-width="1"/>
+<text x="35" y="283" fill="#c2bfd1" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" >▦</text>
+<text x="64" y="283" fill="#f6f4fa" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="650" >Opening Sequence</text>
+<text x="64" y="301" fill="#aaa6bb" font-family="Inter,Arial,sans-serif" font-size="11" font-weight="400" >Storyboard</text>
+<circle cx="222" cy="286" r="3" fill="#bda5ed"/>
+<path d="M25 353H228" stroke="#30313b"/>
+<text x="27" y="395" fill="#88899b" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="650" >W O R K F L O W</text>
+<rect x="17" y="414" width="219" height="35" rx="8" fill="#252732" stroke="none" stroke-width="1"/>
+<circle cx="33" cy="431" r="6" fill="#aa95d9"/>
+<text x="49" y="436" fill="#ebebf3" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="600" >All statuses</text>
+<text x="218" y="436" fill="#858799" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" text-anchor="end">3</text>
+<circle cx="33" cy="473" r="5" fill="#9a96a8"/><text x="48" y="478" fill="#bfc0d0" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >Backlog</text><text x="217" y="478" fill="#8e91a0" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" text-anchor="end">0</text><circle cx="33" cy="510" r="5" fill="#e3ad69"/><text x="48" y="515" fill="#bfc0d0" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >In progress</text><text x="217" y="515" fill="#8e91a0" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" text-anchor="end">1</text><circle cx="33" cy="547" r="5" fill="#84a9e8"/><text x="48" y="552" fill="#bfc0d0" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >In review</text><text x="217" y="552" fill="#8e91a0" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" text-anchor="end">1</text><circle cx="33" cy="584" r="5" fill="#84c9ab"/><text x="48" y="589" fill="#bfc0d0" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >Approved</text><text x="217" y="589" fill="#8e91a0" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" text-anchor="end">1</text><circle cx="33" cy="621" r="5" fill="#e68fa4"/><text x="48" y="626" fill="#bfc0d0" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >Needs changes</text><text x="217" y="626" fill="#8e91a0" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" text-anchor="end">0</text>
+<circle cx="30" cy="910" r="5" fill="#84c9ab"/>
+<text x="45" y="915" fill="#a9a9b8" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" >Private · Local-first</text>
+<text x="281" y="41" fill="#adafbd" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="400" >Orion · Short Film</text>
+<text x="427" y="41" fill="#757788" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="400" >›</text>
+<text x="452" y="41" fill="#f1f1f6" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="650" >Opening Sequence</text>
+<rect x="591" y="23" width="78" height="24" rx="7" fill="#2b2737" stroke="#443e52" stroke-width="1"/>
+<text x="602" y="39" fill="#c8c1d4" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" >Storyboard</text>
+<text x="1118" y="41" fill="#c6c6d2" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="400" >↥   Restore       ↧   Backup        ⚙</text>
+<rect x="252" y="66" width="1080" height="95" rx="0" fill="#191a23" stroke="none" stroke-width="1"/>
+<text x="282" y="109" fill="#f4f2f8" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="700" >Opening Sequence</text>
+<text x="282" y="137" fill="#9798a8" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >3 visual assets  ·  2 connections  ·  Projects/Orion/Sequences/01_Opening</text>
+<rect x="855" y="93" width="187" height="38" rx="10" fill="#252732" stroke="#323442" stroke-width="1"/>
+<text x="874" y="118" fill="#9999a9" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >⌕   Search assets...</text>
+<rect x="1052" y="93" width="116" height="38" rx="10" fill="#252732" stroke="#323442" stroke-width="1"/>
+<text x="1064" y="118" fill="#d0cfdb" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" >All categories</text>
+<rect x="1180" y="93" width="137" height="38" rx="9" fill="url(#brand)" stroke="none" stroke-width="1"/>
+<text x="1196" y="118" fill="#252234" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="650" >＋  Add images</text>
+<rect x="252" y="161" width="1080" height="794" rx="0" fill="#141821" stroke="none" stroke-width="1"/>
+<rect x="252" y="161" width="1080" height="794" rx="0" fill="url(#dotgrid)" stroke="none" stroke-width="1"/>
+<g fill="none" stroke="#817b9b" stroke-width="3" stroke-dasharray="4 8" opacity=".88" marker-end="url(#arrowhead)">
+ <path d="M620 449 C673 449 652 401 701 401"/>
+ <path d="M994 400 C1040 400 981 522 1022 522"/>
+</g>
+<g filter="url(#card-shadow)">
+ <rect x="338" y="335" width="282" height="231" rx="13" fill="#20232e" stroke="#84c9ab" stroke-width="2"/>
+ <rect x="342" y="339" width="274" height="158" rx="10" fill="#151a24" stroke="none" stroke-width="1"/>
+ <clipPath id="clip1"><rect x="342" y="339" width="274" height="158" rx="9" fill="white" stroke="none" stroke-width="1"/></clipPath>
+ <g clip-path="url(#clip1)"><svg x="342" y="339" width="274" height="158" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s1" x2="0" y2="1"><stop stop-color="#16253a"/><stop offset="1" stop-color="#677d82"/></linearGradient><linearGradient id="w1" x2="0" y2="1"><stop stop-color="#d2a27d" stop-opacity=".9"/><stop offset="1" stop-color="#706d77"/></linearGradient></defs><rect width="640" height="400" fill="url(#s1)"/><circle cx="435" cy="104" r="52" fill="#f1c9a3" opacity=".72"/><path d="M0 275Q125 177 228 257T451 220L640 258v142H0" fill="#26364d"/><path d="M0 303L158 215 307 332 450 262 640 329v71H0" fill="#203044"/><path d="M0 336Q178 305 320 337T640 315v85H0" fill="url(#w1)" opacity=".68"/><path d="M0 357Q270 329 640 364v36H0" fill="#121f35"/><path d="M350 392L365 275M365 275l20 5M361 302l-22 9" stroke="#131b2b" stroke-width="7"/><path d="M368 267l-20-20 25-11 15 23z" fill="#e5b58d"/></svg></g>
+ <rect x="351" y="348" width="100" height="23" rx="6" fill="#1a1c27" stroke="none" stroke-width="1"/>
+ <text x="360" y="364" fill="#e7e7f1" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" >SQ01–SH010</text>
+ <rect x="592" y="348" width="19" height="23" rx="5" fill="#171a24" stroke="none" stroke-width="1"/>
+ <text x="596" y="364" fill="#e0dcec" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="600" >↗</text>
+ <text x="353" y="521" fill="#f0f0f5" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="650" >01 · Establishing frame</text>
+ <circle cx="358" cy="547" r="4" fill="#84c9ab"/>
+ <text x="368" y="551" fill="#c0becd" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="500" >Approved</text>
+ <text x="449" y="551" fill="#9b99a9" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" >·   Storyboard</text>
+ </g><g filter="url(#card-shadow)">
+ <rect x="710" y="284" width="282" height="231" rx="13" fill="#20232e" stroke="#84a9e8" stroke-width="2"/>
+ <rect x="714" y="288" width="274" height="158" rx="10" fill="#151a24" stroke="none" stroke-width="1"/>
+ <clipPath id="clip2"><rect x="714" y="288" width="274" height="158" rx="9" fill="white" stroke="none" stroke-width="1"/></clipPath>
+ <g clip-path="url(#clip2)"><svg x="714" y="288" width="274" height="158" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s2" x2="0" y2="1"><stop stop-color="#2e364e"/><stop offset="1" stop-color="#8f716f"/></linearGradient></defs><rect width="640" height="400" fill="url(#s2)"/><circle cx="170" cy="95" r="60" fill="#d5b49c" opacity=".58"/><path d="M0 320L95 180l105 100 80-112 130 146 160-150 70 121v115H0" fill="#344155"/><path d="M0 348L135 255 280 340 410 261l230 67v72H0" fill="#232c40"/><path d="M0 368Q195 322 384 364T640 351v49H0" fill="#151d2e"/><ellipse cx="374" cy="329" rx="44" ry="13" fill="#121826" opacity=".5"/><path d="M350 270q0-28 23-33t26 28l3 59h-55z" fill="#b78c7d"/><circle cx="374" cy="222" r="25" fill="#b39383"/><path d="M347 218q9-45 46-18l8 16-16-2-5-8-19 8z" fill="#1c2231"/><path d="M350 315l-9 32m56-32 13 32M348 275l-17 31m68-33 20 29" stroke="#b78c7d" stroke-linecap="round" stroke-width="16"/><path d="M333 244l22-31 16 39z" fill="#d0b79d"/></svg></g>
+ <rect x="723" y="297" width="100" height="23" rx="6" fill="#1a1c27" stroke="none" stroke-width="1"/>
+ <text x="732" y="313" fill="#e7e7f1" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" >SQ01–SH020</text>
+ <rect x="964" y="297" width="19" height="23" rx="5" fill="#171a24" stroke="none" stroke-width="1"/>
+ <text x="968" y="313" fill="#e0dcec" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="600" >↗</text>
+ <text x="725" y="470" fill="#f0f0f5" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="650" >02 · Character entrance</text>
+ <circle cx="730" cy="496" r="4" fill="#84a9e8"/>
+ <text x="740" y="500" fill="#c0becd" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="500" >In review</text>
+ <text x="821" y="500" fill="#9b99a9" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" >·   Storyboard</text>
+ </g><g filter="url(#card-shadow)">
+ <rect x="1030" y="414" width="282" height="231" rx="13" fill="#20232e" stroke="#e3ad69" stroke-width="2"/>
+ <rect x="1034" y="418" width="274" height="158" rx="10" fill="#151a24" stroke="none" stroke-width="1"/>
+ <clipPath id="clip3"><rect x="1034" y="418" width="274" height="158" rx="9" fill="white" stroke="none" stroke-width="1"/></clipPath>
+ <g clip-path="url(#clip3)"><svg x="1034" y="418" width="274" height="158" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s3" x2="0" y2="1"><stop stop-color="#232f47"/><stop offset="1" stop-color="#b88f78"/></linearGradient></defs><rect width="640" height="400" fill="url(#s3)"/><circle cx="485" cy="94" r="78" fill="#e9a981" opacity=".49"/><path d="M0 285h640v115H0" fill="#4b5664"/><path d="M20 270V151h78v119m15 0V92h101v178m35 0V126h93v144m26 0V65h108v205m34 0V131h94v139" fill="#242f43"/><path d="M36 179h15v22H36zm33 0h15v22H69zm59-55h17v28h-17zm45 0h17v28h-17zm82 24h18v25h-18zm44 0h18v25h-18zm88-53h18v36h-18zm40 0h18v36h-18zm103 57h19v26h-19z" fill="#ddb49a" opacity=".75"/><path d="M0 313Q160 281 300 323t340-20v97H0" fill="#273245"/><path d="M0 348q180-21 330 6t310-12v58H0" fill="#1a263a"/><path d="M140 333l80-50 78 46" fill="none" stroke="#d4ad91" stroke-width="5" opacity=".5"/></svg></g>
+ <rect x="1043" y="427" width="100" height="23" rx="6" fill="#1a1c27" stroke="none" stroke-width="1"/>
+ <text x="1052" y="443" fill="#e7e7f1" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" >SQ01–SH030</text>
+ <rect x="1284" y="427" width="19" height="23" rx="5" fill="#171a24" stroke="none" stroke-width="1"/>
+ <text x="1288" y="443" fill="#e0dcec" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="600" >↗</text>
+ <text x="1045" y="600" fill="#f0f0f5" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="650" >03 · City approach</text>
+ <circle cx="1050" cy="626" r="4" fill="#e3ad69"/>
+ <text x="1060" y="630" fill="#c0becd" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="500" >In progress</text>
+ <text x="1141" y="630" fill="#9b99a9" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" >·   Storyboard</text>
+ </g>
+<rect x="278" y="887" width="321" height="37" rx="8" fill="#222530" stroke="#323645" stroke-width="1"/>
+<text x="292" y="911" fill="#a8a6b5" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >ⓘ   Drag cards  ·  Pan  ·  Scroll to zoom</text>
+<rect x="1167" y="887" width="140" height="38" rx="9" fill="#252734" stroke="#353746" stroke-width="1"/>
+<text x="1180" y="912" fill="#d8d6e4" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="400" >⛶     −      88%     +</text>
+<text x="1352" y="41" fill="#aba8c0" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" >A S S E T   I N S P E C T O R</text>
+<text x="1653" y="42" fill="#c6c4d1" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="400" >×</text>
+<rect x="1355" y="85" width="321" height="176" rx="12" fill="#252733" stroke="none" stroke-width="1"/>
+<clipPath id="panelclip"><rect x="1355" y="85" width="321" height="176" rx="12" fill="white" stroke="none" stroke-width="1"/></clipPath>
+<g clip-path="url(#panelclip)"><svg x="1355" y="85" width="321" height="176" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s2" x2="0" y2="1"><stop stop-color="#2e364e"/><stop offset="1" stop-color="#8f716f"/></linearGradient></defs><rect width="640" height="400" fill="url(#s2)"/><circle cx="170" cy="95" r="60" fill="#d5b49c" opacity=".58"/><path d="M0 320L95 180l105 100 80-112 130 146 160-150 70 121v115H0" fill="#344155"/><path d="M0 348L135 255 280 340 410 261l230 67v72H0" fill="#232c40"/><path d="M0 368Q195 322 384 364T640 351v49H0" fill="#151d2e"/><ellipse cx="374" cy="329" rx="44" ry="13" fill="#121826" opacity=".5"/><path d="M350 270q0-28 23-33t26 28l3 59h-55z" fill="#b78c7d"/><circle cx="374" cy="222" r="25" fill="#b39383"/><path d="M347 218q9-45 46-18l8 16-16-2-5-8-19 8z" fill="#1c2231"/><path d="M350 315l-9 32m56-32 13 32M348 275l-17 31m68-33 20 29" stroke="#b78c7d" stroke-linecap="round" stroke-width="16"/><path d="M333 244l22-31 16 39z" fill="#d0b79d"/></svg></g>
+<text x="1355" y="299" fill="#a7a3b8" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="650" >V I S U A L   A S S E T</text>
+<text x="1654" y="299" fill="#707182" font-family="Inter,Arial,sans-serif" font-size="11" font-weight="400" text-anchor="end">demo-b</text>
+<text x="1355" y="328" fill="#b9b8c7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" >Name</text>
+<rect x="1355" y="343" width="321" height="43" rx="8" fill="#262834" stroke="#3d4051" stroke-width="1"/>
+<text x="1368" y="370" fill="#f1f1f7" font-family="Inter,Arial,sans-serif" font-size="16" font-weight="600" >02 · Character entrance</text>
+<text x="1355" y="416" fill="#b9b8c7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" >Description</text>
+<rect x="1355" y="431" width="321" height="102" rx="8" fill="#262834" stroke="#3d4051" stroke-width="1"/>
+<text x="1367" y="456" fill="#e0dee7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >Review perspective and hero silhouette</text>
+<text x="1367" y="478" fill="#e0dee7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >before final approval.</text>
+<text x="1355" y="565" fill="#b9b8c7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" >Status</text>
+<text x="1529" y="565" fill="#b9b8c7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" >Category</text>
+<rect x="1355" y="578" width="159" height="40" rx="8" fill="#262834" stroke="#3d4051" stroke-width="1"/>
+<rect x="1355" y="578" width="4" height="40" rx="2" fill="#84a9e8" stroke="none" stroke-width="1"/>
+<text x="1368" y="603" fill="#e2e0ec" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="550" >In review</text>
+<rect x="1527" y="578" width="149" height="40" rx="8" fill="#262834" stroke="#3d4051" stroke-width="1"/>
+<text x="1541" y="603" fill="#e2e0ec" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >Storyboard</text>
+<text x="1355" y="657" fill="#b9b8c7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" >Board</text>
+<rect x="1355" y="670" width="321" height="40" rx="8" fill="#262834" stroke="#3d4051" stroke-width="1"/>
+<text x="1368" y="695" fill="#e2e0ec" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >Opening Sequence</text>
+<text x="1355" y="747" fill="#b9b8c7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600" >Original file / source path</text>
+<rect x="1355" y="759" width="321" height="40" rx="8" fill="#262834" stroke="#3d4051" stroke-width="1"/>
+<text x="1368" y="784" fill="#dad8e6" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="400" >Samples/02 · Character entrance.svg</text>
+<text x="1355" y="847" fill="#aba8c0" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" >C U S T O M   F I E L D S</text>
+<path d="M1355 865H1676" stroke="#3e4051"/>
+<text x="1355" y="894" fill="#b9b8c7" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >Shot ID</text>
+<rect x="1355" y="904" width="321" height="38" rx="8" fill="#262834" stroke="#3d4051" stroke-width="1"/>
+<text x="1367" y="929" fill="#e9e7f1" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="400" >SQ01–SH020</text>
+</svg>
