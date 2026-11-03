@@ -10,6 +10,19 @@ Boardloom combines the spatial freedom of a reference board (in the spirit of Pu
 
 > Status: **v0.1 local-first working prototype**. This repository includes a running browser application, automated domain tests, and detailed instructions for future engineering agents. It is not yet a hosted service, collaborative product, or native desktop app.
 
+## What's new in v0.2.0 — production workflow
+
+Boardloom can now manage a shot **before an image exists**, and lets producers move between the visual canvas and a compact **Table** view without duplicating or splitting data.
+
+- **Canvas + Table:** visual arrangement and a production overview with editable status, assignee and due date columns.
+- **Batch editing:** Ctrl/Cmd+click cards (or Ctrl/Cmd+A on the board), then assign a status or category, or move items to another board in one operation. Moving items removes outdated board-local arrows and supports Undo.
+- **Create a task:** the `+ Task` button adds a shot with no image, ready for notes and custom fields.
+- **Undo / Redo:** revert metadata changes and card moves using the buttons or Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z. The history is limited to 35 changes and lasts for the current session.
+- **CSV reports:** export the current board's task metadata (including project-defined custom fields) as a spreadsheet-friendly CSV. For images, continue using full JSON Backup.
+- **Faster search:** asset search also indexes custom metadata. A color-coded workflow progress strip summarizes the board.
+
+**Compatibility:** no data format migration is required; v0.1 workspaces and backups remain valid. Removed images are not immediately purged from local IndexedDB so that session Undo can recover them. They may occupy storage until a future safe cleanup workflow is available. No remote image upload or automatic filesystem access is introduced.
+
 ## Features implemented in v0.1
 
 | Feature | Description |
