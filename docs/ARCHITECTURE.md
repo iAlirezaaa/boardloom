@@ -59,3 +59,11 @@ type Edge = {id: string; boardId: string; from: string; to: string; label: strin
 
 ## Upgrade strategy
 Keep domain and storage independent of UI. Canvas renderer can be replaced behind a stable adapter with React Flow (`@xyflow/react`, MIT), Konva, a custom Canvas2D/WebGL path, or a measured solution. Evaluate dependencies, licenses, node count, hit-testing, keyboard accessibility and export capabilities before choosing. Never rewrite to an incompatible data format without versioned migration tests.
+
+
+## v0.2 production utilities (backwards compatible)
+- `src/history.mjs`: in-memory metadata snapshots bounded to 35 entries; every successful `commit()` records a change, Undo/Redo re-save validated workspace state. Browser reload clears the undo stack.
+- `src/core.mjs`: `batchUpdateAssets` validates the **entire** selection and requested operation before mutation; cross-board moves remove affected connection edges, preserving invariants. `exportBoardCsv` generates a UTF-8 BOM CSV with escaped custom fields and spreadsheet formula protection.
+- `src/app.mjs`: two views share **the same entities**. The table and canvas both edit status via the domain model; multi-selection is temporary UI state only. Empty-image tasks use the existing no-image asset representation.
+- Image blobs are not immediately deleted when an asset/board is removed, so session Undo can recover images. An explicit, safe, future orphan-blob cleanup flow is necessary before calling deletion permanent. Do not silently clear IndexedDB or change this without a recovery design.
+- No database schema bump or migration is required; existing version-1 backups remain valid.

@@ -1,8 +1,13 @@
-import {uid,initialState,activeProject,activeBoard,newProject,newBoard,newAsset,addStatus,removeStatus,addField,removeField,removeBoard,removeAsset,connect,countsByStatus,BOARD_CATEGORIES,normalizeHex} from './core.mjs';
-import {loadState,saveState,putImage,getImage,deleteImage,makeBackup,restoreBackup} from './storage.mjs';
+import {uid,initialState,activeProject,activeBoard,newProject,newBoard,newAsset,addStatus,removeStatus,addField,removeField,removeBoard,removeAsset,connect,countsByStatus,BOARD_CATEGORIES,normalizeHex,batchUpdateAssets,exportBoardCsv} from './core.mjs';
+import {loadState,saveState,putImage,getImage,makeBackup,restoreBackup} from './storage.mjs';
+import {createHistory} from './history.mjs';
 
 let state=loadState();
 let selectedId=null;
+let selectedIds=new Set();
+let viewMode='canvas';
+const history=createHistory();
+let lastSaved=structuredClone(state);
 let statusFilter='all';
 let categoryFilter='all';
 let searchText='';
@@ -12,6 +17,7 @@ let helpOpen=false;
 let connectFrom=null;
 let view={x:-85,y:10,z:0.88};
 let pointer=null;
+let suppressCardClick=false;
 let toastTimer;
 const imageUrls=new Map();
 const app=document.getElementById('app');
@@ -47,12 +53,31 @@ function project(){return activeProject(state);}
 function board(){return activeBoard(state);}
 function assets(){return project().assets.filter(a=>a.boardId===board().id);}
 function status(id){return project().statuses.find(s=>s.id===id)||project().statuses[0];}
-function selected(){return project().assets.find(a=>a.id===selectedId)||null;}
-function commit(rerender=true){try{saveState(state);}catch(e){notify(`Save failed: ${e.message}`,true);}if(rerender)render();}
+function selected(){return selectedIds.size===1?project().assets.find(a=>a.id===selectedId)||null:null;}
+function chooseAsset(id,append=false){
+  if(!append)selectedIds=new Set([id]);
+  else if(selectedIds.has(id))selectedIds.delete(id);
+  else selectedIds.add(id);
+  selectedId=selectedIds.size===1?[...selectedIds][0]:null;
+  settingsOpen=boardSettingsOpen=helpOpen=false;
+  render();
+}
+function applyHistory(direction){
+  const next=direction==='undo'?history.undo(state):history.redo(state);
+  if(!next)return;
+  try{saveState(next);state=next;lastSaved=structuredClone(state);resetSelection();render();notify(direction==='undo'?'Undone.':'Redone.');}
+  catch(e){notify(`History save failed: ${e.message}`,true);}
+}
+function resetSelection(){selectedId=null;selectedIds.clear();connectFrom=null;}
+function commit(rerender=true){
+  try{saveState(state);if(history.capture(lastSaved,state))lastSaved=structuredClone(state);}
+  catch(e){notify(`Save failed: ${e.message}`,true);}
+  if(rerender)render();
+}
 function notify(message,error=false){const target=document.getElementById('toast'); target.textContent=message;target.className=`show${error?' danger':''}`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>target.className='',3300);}
-function resetPanels(){selectedId=null;connectFrom=null;settingsOpen=false;boardSettingsOpen=false;helpOpen=false;statusFilter='all';categoryFilter='all';searchText='';view={x:-85,y:10,z:.88};}
+function resetPanels(){resetSelection();settingsOpen=false;boardSettingsOpen=false;helpOpen=false;statusFilter='all';categoryFilter='all';searchText='';view={x:-85,y:10,z:.88};}
 function options(values,selectedValue){return values.map(v=>`<option value="${attr(v)}"${v===selectedValue?' selected':''}>${esc(v)}</option>`).join('');}
-function assetVisible(a){if(statusFilter!=='all'&&a.statusId!==statusFilter)return false;if(categoryFilter!=='all'&&a.category!==categoryFilter)return false;if(searchText&&!`${a.name} ${a.description} ${a.sourcePath} ${a.tags.join(' ')}`.toLowerCase().includes(searchText.toLowerCase()))return false;return true;}
+function assetVisible(a){if(statusFilter!=='all'&&a.statusId!==statusFilter)return false;if(categoryFilter!=='all'&&a.category!==categoryFilter)return false;if(searchText&&!`${a.name} ${a.description} ${a.sourcePath} ${a.tags.join(' ')} ${Object.values(a.custom||{}).join(' ')}`.toLowerCase().includes(searchText.toLowerCase()))return false;return true;}
 function render(){
   const p=project(),b=board();
   if(!p||!b){state=initialState();saveState(state);return render();}
@@ -71,18 +96,18 @@ function render(){
     <div class="sidebar-bottom"><div class="local-pill"><span class="live-dot"></span> Private · Local-first</div><button class="side-help" data-click="help">${icon('info',15)} Quick guide</button></div>
   </aside>
   <section class="content">
-    <header class="topbar"><div class="breadcrumbs"><span>${esc(p.name)}</span>${icon('chevron',14)}<b>${esc(b.name)}</b><span class="category-tag">${esc(b.category)}</span></div><div class="top-actions"><button class="subtle-btn" data-click="import-backup" title="Import workspace backup">${icon('upload',16)} <span>Restore</span></button><button class="subtle-btn" data-click="export-backup" title="Save complete backup">${icon('download',16)} <span>Backup</span></button><span class="top-divider"></span><button class="icon-btn top-gear" title="Workspace settings" data-click="settings">${icon('settings',19)}</button></div></header>
-    <div class="board-toolbar"><div class="board-title"><div class="board-title-row"><h1>${esc(b.name)}</h1><button class="icon-btn" title="Edit board details" data-click="board-settings">${icon('more',19)}</button></div><p>${all.length} visual assets · ${p.edges.filter(e=>e.boardId===b.id).length} connections${b.storagePath?' · '+esc(b.storagePath):''}</p></div>
-      <div class="board-tools"><div class="search-box">${icon('search',17)}<input id="asset-search" type="search" placeholder="Search assets..." value="${attr(searchText)}" aria-label="Search visual assets"/></div><select data-change="category-filter" title="Filter asset category" class="filter-select"><option value="all">All categories</option>${options(categories,categoryFilter)}</select><button class="primary-btn" data-click="upload">${icon('plus',17)} Add images</button></div>
+    <header class="topbar"><div class="breadcrumbs"><span>${esc(p.name)}</span>${icon('chevron',14)}<b>${esc(b.name)}</b><span class="category-tag">${esc(b.category)}</span></div><div class="top-actions"><button class="subtle-btn" data-click="import-backup" title="Import workspace backup">${icon('upload',16)} <span>Restore</span></button><button class="subtle-btn" data-click="export-backup" title="Save complete backup">${icon('download',16)} <span>Backup</span></button><span class="top-divider"></span><button class="icon-btn top-gear" data-click="undo" title="Undo (Ctrl+Z)" ${history.canUndo?'':'disabled'}>↶</button><button class="icon-btn top-gear" data-click="redo" title="Redo (Ctrl+Shift+Z)" ${history.canRedo?'':'disabled'}>↷</button><button class="icon-btn top-gear" title="Workspace settings" data-click="settings">${icon('settings',19)}</button></div></header>
+    <div class="board-toolbar"><div class="board-title"><div class="board-title-row"><h1>${esc(b.name)}</h1><button class="icon-btn" title="Edit board details" data-click="board-settings">${icon('more',19)}</button></div><p>${all.length} visual tasks · ${p.edges.filter(e=>e.boardId===b.id).length} connections${b.storagePath?' · '+esc(b.storagePath):''}</p><div class="workflow-progress" role="img" aria-label="Task status distribution">${p.statuses.map(st=>`<span title="${attr(st.name)}: ${counts[st.id]||0}" style="flex:${counts[st.id]||0};background:${st.color}"></span>`).join('')}</div></div>
+      <div class="board-tools"><div class="search-box">${icon('search',17)}<input id="asset-search" type="search" placeholder="Search assets..." value="${attr(searchText)}" aria-label="Search visual assets"/></div><select data-change="category-filter" title="Filter asset category" class="filter-select"><option value="all">All categories</option>${options(categories,categoryFilter)}</select><div class="view-toggle" role="group" aria-label="Board view"><button data-click="view-canvas" class="${viewMode==='canvas'?'active':''}">Canvas</button><button data-click="view-table" class="${viewMode==='table'?'active':''}">Table</button></div><button class="secondary-btn toolbar-button" title="Export all board task details as CSV" data-click="export-csv">CSV</button><button class="secondary-btn toolbar-button" data-click="new-task">+ Task</button><button class="primary-btn" data-click="upload">${icon('plus',17)} Add images</button></div>
     </div>
-    <div class="stage-area"><div id="stage" class="stage" aria-label="Image canvas"><div class="stage-grid"></div><div id="world" class="world" style="transform:translate(${view.x}px,${view.y}px) scale(${view.z})"><svg id="connections" class="connections" width="6000" height="6000" viewBox="0 0 6000 6000" aria-label="Visual connections">${buildEdges(filtered)}</svg>${filtered.map(buildCard).join('')}</div>${filtered.length===0?`<div class="empty-state" id="empty-state"><span class="empty-icon">${icon('image',30)}</span><h2>${all.length?'No matching assets':'Your visual story starts here'}</h2><p>${all.length?'Change your search or filters to see more assets.':'Drop your images here, arrange them freely, and turn every image into a trackable production item.'}</p><button class="secondary-btn" data-click="upload">${icon('plus',16)} Add images</button></div>`:''}
+    ${viewMode==='table'?renderTable(filtered):`<div class="stage-area"><div id="stage" class="stage" aria-label="Image canvas"><div class="stage-grid"></div><div id="world" class="world" style="transform:translate(${view.x}px,${view.y}px) scale(${view.z})"><svg id="connections" class="connections" width="6000" height="6000" viewBox="0 0 6000 6000" aria-label="Visual connections">${buildEdges(filtered)}</svg>${filtered.map(buildCard).join('')}</div>${filtered.length===0?`<div class="empty-state" id="empty-state"><span class="empty-icon">${icon('image',30)}</span><h2>${all.length?'No matching assets':'Your visual story starts here'}</h2><p>${all.length?'Change your search or filters to see more assets.':'Drop your images here, arrange them freely, and turn every image into a trackable production item.'}</p><button class="secondary-btn" data-click="upload">${icon('plus',16)} Add images</button></div>`:''}
       <div id="drop-hint" class="drop-hint"><div>${icon('upload',34)}<h2>Drop images to your canvas</h2><p>PNG, JPG, WEBP, GIF and AVIF</p></div></div>
       ${connectFrom?`<div class="connection-banner">${icon('link',16)} Select a target card to connect <button data-click="cancel-link">Cancel</button></div>`:''}
-      <div class="canvas-tip">${icon('info',14)} Drag cards · Drag empty space to pan · Scroll to zoom</div>
+      <div class="canvas-tip">${icon('info',14)} Ctrl/Cmd+click multi-select · Ctrl+A select all · Drag to arrange</div>
       <div class="zoom-tools"><button title="Fit content" data-click="fit">${icon('fit',18)}</button><button title="Zoom out" data-click="zoom-out">−</button><span>${Math.round(view.z*100)}%</span><button title="Zoom in" data-click="zoom-in">+</button></div>
-    </div>
+    </div>`}
   </section>
-  ${settingsOpen?renderSettings():boardSettingsOpen?renderBoardSettings():helpOpen?renderHelp():selected()?renderInspector(selected()):''}
+  ${settingsOpen?renderSettings():boardSettingsOpen?renderBoardSettings():helpOpen?renderHelp():selectedIds.size>1?renderBulkInspector():selected()?renderInspector(selected()):''}
   </div>
   <input type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" multiple hidden id="image-file-picker" />
   <input type="file" accept="application/json,.json" hidden id="backup-file-picker" />`;
@@ -97,9 +122,29 @@ function buildEdges(filtered){
   }).join('');
 }
 function buildCard(a){
-  const s=status(a.statusId),isActive=selectedId===a.id;
+  const s=status(a.statusId),isActive=selectedIds.has(a.id);
   const img=a.sample?`<img alt="" draggable="false" src="${attr(a.sample)}" />`:a.imageKey?`<img alt="" draggable="false" data-image-for="${attr(a.id)}"/>`:`<div class="image-placeholder">${icon('image',36)}</div>`;
   return `<article class="asset-card ${isActive?'selected':''} ${connectFrom?'link-target':''}" data-asset-id="${attr(a.id)}" style="left:${a.position.x}px;top:${a.position.y}px;--status-color:${s.color}" tabindex="0" aria-label="${attr(a.name)} — ${attr(s.name)}"><div class="asset-thumbnail">${img}<span class="asset-index">${esc(a.custom.shot||a.category)}</span><button class="asset-link" title="Connect to another image" aria-label="Connect ${attr(a.name)}" data-click="start-link" data-id="${attr(a.id)}">${icon('link',17)}</button></div><div class="asset-bottom"><div class="asset-name">${esc(a.name)}</div><div class="asset-meta"><span class="mini-dot" style="background:${s.color}"></span>${esc(s.name)} <span class="meta-sep">·</span> ${esc(a.category||'Reference')}</div></div><span class="asset-port"></span></article>`;
+}
+function renderTable(filtered){
+  const p=project();
+  const fieldByName=(id,name)=>p.fields.find(f=>f.id===id||f.name.toLowerCase()===name)?.id;
+  const ownerId=fieldByName('owner','assignee'),dueId=fieldByName('deadline','due date');
+  const rows=filtered.map(a=>{
+    const s=status(a.statusId);
+    const image=a.sample?`<img src="${attr(a.sample)}" alt=""/>`:a.imageKey?`<img data-image-for="${attr(a.id)}" alt=""/>`:`<span class="table-no-image">Task</span>`;
+    return `<tr class="${selectedIds.has(a.id)?'row-selected':''}"><td><input type="checkbox" aria-label="Select ${attr(a.name)}" data-change="bulk-select" data-id="${attr(a.id)}" ${selectedIds.has(a.id)?'checked':''}></td><td><div class="table-image">${image}</div></td><td><button data-click="select-asset" data-id="${attr(a.id)}" class="table-asset-name">${esc(a.name)}</button><small>${esc(a.custom.shot||a.id.slice(-8))}</small></td><td><select data-change="row-status" data-id="${attr(a.id)}" class="table-status" style="border-left-color:${s.color}">${p.statuses.map(st=>`<option value="${attr(st.id)}" ${st.id===a.statusId?'selected':''}>${esc(st.name)}</option>`).join('')}</select></td><td>${esc(a.category)}</td><td>${esc(a.custom[ownerId]||'—')}</td><td>${esc(a.custom[dueId]||'—')}</td></tr>`;
+  }).join('');
+  return `<div class="table-stage"><div class="table-heading"><strong>Production overview</strong><span>${filtered.length} of ${assets().length} tasks</span><button class="subtle-btn" data-click="select-all">Select visible</button><button class="subtle-btn" data-click="clear-selection">Clear selection</button></div><div class="table-scroll"><table class="task-table"><thead><tr><th>Select</th><th>Preview</th><th>Task / Shot</th><th>Workflow</th><th>Category</th><th>Assignee</th><th>Due</th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="table-empty">No matching tasks. Add a task or change filters.</td></tr>'}</tbody></table></div></div>`;
+}
+function renderBulkInspector(){
+  const p=project();
+  return `<aside class="detail-panel"><div class="detail-top"><span class="panel-eyebrow">BULK EDIT</span><button data-click="clear-selection" class="icon-btn" title="Clear selection">${icon('close',18)}</button></div><div class="detail-scroll"><h2>${selectedIds.size} items selected</h2><p class="panel-description">Apply changes to all selected tasks at once. Undo can reverse these edits.</p>
+  <label class="field-label">Apply workflow status</label><select class="form-input" data-change="bulk-status"><option value="">Choose status…</option>${p.statuses.map(st=>`<option value="${attr(st.id)}">${esc(st.name)}</option>`).join('')}</select>
+  <label class="field-label">Set category</label><input class="form-input" data-change="bulk-category" placeholder="Storyboard, Concept Art…" maxlength="100"/>
+  <label class="field-label">Move to board</label><select class="form-input" data-change="bulk-board"><option value="">Choose destination…</option>${p.boards.filter(x=>x.id!==board().id).map(b=>`<option value="${attr(b.id)}">${esc(b.name)}</option>`).join('')}</select>
+  <p class="muted-note">Moving items to another board removes connections to their old board; this can be undone.</p>
+  <div class="detail-actions"><button data-click="clear-selection" class="secondary-btn">Clear selection</button><button data-click="bulk-delete" class="danger-btn">${icon('trash',16)} Remove selected</button></div></div></aside>`;
 }
 function renderInspector(a){
   const p=project(); const s=status(a.statusId);
@@ -132,7 +177,7 @@ function renderBoardSettings(){
  <label class="field-label">Storage path <span class="muted-text">(reference only)</span></label><input class="form-input" data-change="board-path" value="${attr(b.storagePath)}" placeholder="Projects/Film/Sequences/Opening" /><div class="path-info">${icon('folder',17)} The path is saved as metadata. Browser security prevents direct access to arbitrary local folders.</div>
  <div class="detail-actions"><button class="danger-btn" data-click="delete-board" ${p.boards.length<2?'disabled':''}>${icon('trash',16)} Delete board</button></div></div></aside>`;
 }
-function renderHelp(){return `<aside class="detail-panel"><div class="detail-top"><span class="panel-eyebrow">QUICK GUIDE</span><button class="icon-btn" data-click="close-panel">${icon('close',18)}</button></div><div class="detail-scroll"><h2>Make images actionable.</h2><p class="panel-description">Boardloom blends visual reference boards with production tracking.</p><div class="help-row"><b>01 · Add</b><p>Drag image files onto the canvas or click Add images. Files stay on this device.</p></div><div class="help-row"><b>02 · Arrange</b><p>Drag images freely. Drag the canvas background to pan; scroll to zoom.</p></div><div class="help-row"><b>03 · Track</b><p>Select an image to edit its colored status, descriptions, tags and custom fields.</p></div><div class="help-row"><b>04 · Connect</b><p>Click the chain icon on one image, then another to create a directional dependency.</p></div><div class="help-row"><b>05 · Organize</b><p>Create multiple boards, set categories, and record paths for boards or source assets.</p></div><div class="help-row"><b>06 · Preserve</b><p>Backup exports a portable JSON with the images included. Restore recovers the workspace.</p></div><p class="muted-note">Designed for desktop browsers. There is no server sync or multi-user collaboration in v0.1.</p></div></aside>`;}
+function renderHelp(){return `<aside class="detail-panel"><div class="detail-top"><span class="panel-eyebrow">QUICK GUIDE</span><button class="icon-btn" data-click="close-panel">${icon('close',18)}</button></div><div class="detail-scroll"><h2>Make images actionable.</h2><p class="panel-description">Boardloom blends visual reference boards with production tracking.</p><div class="help-row"><b>01 · Add</b><p>Drag image files onto the canvas or click Add images. Files stay on this device.</p></div><div class="help-row"><b>02 · Arrange</b><p>Drag images freely. Drag the canvas background to pan; scroll to zoom.</p></div><div class="help-row"><b>03 · Track</b><p>Select an image to edit its colored status, descriptions, tags and custom fields.</p></div><div class="help-row"><b>04 · Connect</b><p>Click the chain icon on one image, then another to create a directional dependency.</p></div><div class="help-row"><b>05 · Organize</b><p>Create multiple boards, set categories, and record paths for boards or source assets.</p></div><div class="help-row"><b>06 · Manage</b><p>Switch to Table for production tracking, select multiple items with Ctrl/Cmd+click or Ctrl+A, and edit statuses, categories or destination boards in bulk.</p></div><div class="help-row"><b>07 · Report</b><p>Use CSV to export metadata for the current board. Create image-less tasks with + Task and use Undo/Redo to reverse metadata actions.</p></div><div class="help-row"><b>08 · Preserve</b><p>Backup exports a portable JSON with the images included. Restore recovers the workspace.</p></div><p class="muted-note">Designed for desktop browsers. There is no server sync or multi-user collaboration in v0.1.</p></div></aside>`;}
 async function hydrateImages(){
   const targets=[...app.querySelectorAll('img[data-image-for]')];
   for(const img of targets){
@@ -174,18 +219,28 @@ function runClick(target){
     case 'settings':settingsOpen=true;boardSettingsOpen=false;helpOpen=false;render();break;
     case 'board-settings':boardSettingsOpen=true;settingsOpen=false;helpOpen=false;render();break;
     case 'help':helpOpen=true;boardSettingsOpen=false;settingsOpen=false;render();break;
-    case 'close-panel':settingsOpen=false;boardSettingsOpen=false;helpOpen=false;selectedId=null;render();break;
+    case 'close-panel':settingsOpen=false;boardSettingsOpen=false;helpOpen=false;resetSelection();render();break;
     case 'add-status':addStatus(p,`Status ${p.statuses.length+1}`,'#ba9ae1');commit();break;
     case 'remove-status':if(!confirm(`Delete "${p.statuses.find(s=>s.id===id)?.name}"? Assigned images will move to the first status.`))return;removeStatus(p,id);if(statusFilter===id)statusFilter='all';commit();break;
     case 'add-field':addField(p,`Custom field ${p.fields.length+1}`);commit();break;
     case 'remove-field':if(!confirm('Remove this field and all values stored in it?'))return;removeField(p,id);commit();break;
-    case 'delete-board':{if(!confirm('Delete this board, all its images and connections? This cannot be undone without a backup.'))return;const imageKeys=p.assets.filter(a=>a.boardId===board().id).map(a=>a.imageKey).filter(Boolean);removeBoard(p,board().id);for(const key of imageKeys){deleteImage(key).catch(console.warn);if(imageUrls.has(key)){URL.revokeObjectURL(imageUrls.get(key));imageUrls.delete(key);}}state.activeBoardId=p.boards[0].id;resetPanels();commit();break;}
-    case 'delete-asset':{const a=selected();if(!a||!confirm(`Delete "${a.name}" and its connections?`))return;removeAsset(p,a.id);if(a.imageKey){deleteImage(a.imageKey).catch(console.warn);if(imageUrls.has(a.imageKey)){URL.revokeObjectURL(imageUrls.get(a.imageKey));imageUrls.delete(a.imageKey);}}selectedId=null;commit();break;}
-    case 'start-link':connectFrom=id;selectedId=null;settingsOpen=false;boardSettingsOpen=false;render();notify('Click another image to draw a dependency arrow.');break;
+    case 'delete-board':{if(!confirm('Remove this board and all its tasks? You can Undo during this session.'))return;removeBoard(p,board().id);state.activeBoardId=p.boards[0].id;resetPanels();commit();break;}
+    case 'delete-asset':{const a=selected();if(!a||!confirm(`Remove "${a.name}" and its connections? Undo is available during this session.`))return;removeAsset(p,a.id);resetSelection();commit();break;}
+    case 'start-link':connectFrom=id;resetSelection();connectFrom=id;settingsOpen=false;boardSettingsOpen=false;render();notify('Click another image to draw a dependency arrow.');break;
     case 'cancel-link':connectFrom=null;render();break;
     case 'upload':document.getElementById('image-file-picker').click();break;
     case 'export-backup':void (async()=>{try{notify('Preparing complete backup with image data...');const backup=await makeBackup(state);download(`boardloom-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(backup),'application/json');notify('Backup exported.');}catch(e){notify(e.message,true);}})();break;
     case 'import-backup':document.getElementById('backup-file-picker').click();break;
+    case 'undo':applyHistory('undo');break;
+    case 'redo':applyHistory('redo');break;
+    case 'view-canvas':viewMode='canvas';render();break;
+    case 'view-table':viewMode='table';render();break;
+    case 'new-task':{const name=prompt('Task / shot name','New shot');if(!name?.trim())return;const items=assets();const x=items.length?Math.min(6000,Math.max(...items.map(a=>a.position.x))+60):160;const y=items.length?Math.min(6000,Math.max(...items.map(a=>a.position.y))+110):140;const a=newAsset(board().id,name.trim().slice(0,160),p.statuses[0].id,{x,y},{sourcePath:''});p.assets.push(a);selectedIds=new Set([a.id]);selectedId=a.id;commit();notify('Task created. Add details in the inspector.');break;}
+    case 'select-asset':chooseAsset(id);break;
+    case 'select-all':selectedIds=new Set(assets().filter(assetVisible).map(a=>a.id));selectedId=selectedIds.size===1?[...selectedIds][0]:null;render();break;
+    case 'clear-selection':resetSelection();render();break;
+    case 'bulk-delete':{const ids=[...selectedIds];if(!ids.length||!confirm(`Remove ${ids.length} selected tasks? Undo is available during this session.`))return;for(const assetId of ids)removeAsset(p,assetId);resetSelection();commit();break;}
+    case 'export-csv':{const csv=exportBoardCsv(p,board().id);download(`boardloom-${board().name.replace(/[^a-z0-9_-]+/gi,'-')}.csv`,csv,'text/csv;charset=utf-8');notify('Board CSV exported, including custom fields.');break;}
     case 'fit':fit();break;
     case 'zoom-in':zoomAt(1.2);break;
     case 'zoom-out':zoomAt(1/1.2);break;
@@ -197,11 +252,20 @@ function runChange(target){
   try{switch(which){
     case 'project':state.activeProjectId=val;state.activeBoardId=activeProject(state).boards[0].id;resetPanels();break;
     case 'category-filter':categoryFilter=val;render();return;
+    case 'bulk-select':{
+      if(target.checked)selectedIds.add(id);else selectedIds.delete(id);
+      selectedId=selectedIds.size===1?[...selectedIds][0]:null;
+      render();return;
+    }
+    case 'row-status':{const item=p.assets.find(x=>x.id===id&&x.boardId===b.id);if(item&&p.statuses.some(s=>s.id===val))item.statusId=val;break;}
+    case 'bulk-status':if(val){batchUpdateAssets(p,b.id,[...selectedIds],{statusId:val});notify(`${selectedIds.size} statuses updated.`);}break;
+    case 'bulk-category':batchUpdateAssets(p,b.id,[...selectedIds],{category:val.trim()});break;
+    case 'bulk-board':if(val){batchUpdateAssets(p,b.id,[...selectedIds],{boardId:val});resetSelection();}break;
     case 'asset-name':if(a)a.name=val.trim()||'Untitled asset';break;
     case 'asset-description':if(a)a.description=val;break;
     case 'asset-status':if(a&&p.statuses.some(s=>s.id===val))a.statusId=val;break;
     case 'asset-category':if(a)a.category=val.trim().slice(0,80);break;
-    case 'asset-board':if(a&&p.boards.some(x=>x.id===val)){a.boardId=val;p.edges=p.edges.filter(e=>e.from!==a.id&&e.to!==a.id);selectedId=null;}break;
+    case 'asset-board':if(a&&p.boards.some(x=>x.id===val)){a.boardId=val;p.edges=p.edges.filter(e=>e.from!==a.id&&e.to!==a.id);resetSelection();}break;
     case 'asset-path':if(a)a.sourcePath=val.slice(0,2048);break;
     case 'asset-tags':if(a)a.tags=val.split(',').map(v=>v.trim()).filter(Boolean).slice(0,30);break;
     case 'custom':if(a&&p.fields.some(f=>f.id===id))a.custom[id]=val.slice(0,4000);break;
@@ -221,8 +285,9 @@ app.addEventListener('click',(event)=>{
   const button=event.target.closest('[data-click]');if(button){event.stopPropagation();runClick(button);return;}
   const card=event.target.closest('.asset-card');if(card){
     const id=card.dataset.assetId;
-    if(connectFrom){try{if(connect(project(),board().id,connectFrom,id)){notify('Connection created.');}else{notify('Connection already exists.');}connectFrom=null;selectedId=null;commit();}catch(e){notify(e.message,true);}return;}
-    selectedId=id;settingsOpen=boardSettingsOpen=helpOpen=false;render();
+    if(suppressCardClick){suppressCardClick=false;return;}
+    if(connectFrom){try{if(connect(project(),board().id,connectFrom,id)){notify('Connection created.');}else{notify('Connection already exists.');}resetSelection();commit();}catch(e){notify(e.message,true);}return;}
+    chooseAsset(id,event.ctrlKey||event.metaKey||event.shiftKey);
   }
 });
 app.addEventListener('change',(event)=>{
@@ -245,6 +310,7 @@ app.addEventListener('pointerdown',(event)=>{
   if(card&&event.button===0){
     if(connectFrom)return;
     const asset=project().assets.find(a=>a.id===card.dataset.assetId);if(!asset)return;
+    if((event.ctrlKey||event.metaKey||event.shiftKey)&&selectedIds.size) return;
     pointer={kind:'asset',id:asset.id,startX:event.clientX,startY:event.clientY,x:asset.position.x,y:asset.position.y,moved:false};
     card.setPointerCapture(event.pointerId);
   }else{
@@ -266,7 +332,7 @@ app.addEventListener('pointermove',(event)=>{
    refreshEdges();
  }
 });
-function endPointer(){if(!pointer)return;const ended=pointer;pointer=null;document.getElementById('stage')?.classList.remove('panning');if(ended.kind==='asset'&&ended.moved)commit(false);}
+function endPointer(){if(!pointer)return;const ended=pointer;pointer=null;document.getElementById('stage')?.classList.remove('panning');if(ended.kind==='asset'&&ended.moved){suppressCardClick=true;commit(false);}}
 app.addEventListener('pointerup',endPointer);app.addEventListener('pointercancel',endPointer);
 app.addEventListener('wheel',event=>{
  if(!event.target.closest('#stage'))return;event.preventDefault();const bounds=document.getElementById('stage').getBoundingClientRect();zoomAt(event.deltaY<0?1.08:1/1.08,event.clientX-bounds.left,event.clientY-bounds.top);
@@ -275,8 +341,14 @@ app.addEventListener('dragover',event=>{if(!event.target.closest('#stage')||!eve
 app.addEventListener('dragleave',event=>{if(!event.target.closest('#stage'))return;const next=event.relatedTarget;if(!next||!next.closest?.('#stage'))document.getElementById('drop-hint')?.classList.remove('visible');});
 app.addEventListener('drop',event=>{if(!event.target.closest('#stage'))return;event.preventDefault();document.getElementById('drop-hint')?.classList.remove('visible');void addFiles(event.dataTransfer.files,toWorld(event.clientX,event.clientY));});
 document.addEventListener('keydown',event=>{
- if(event.key==='Escape'){if(connectFrom){connectFrom=null;render();}else if(settingsOpen||boardSettingsOpen||helpOpen||selectedId){settingsOpen=boardSettingsOpen=helpOpen=false;selectedId=null;render();}}
- if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='s'){event.preventDefault();commit(false);notify('Saved locally. Use Backup to export a portable file.');}
+ const typing=event.target?.closest?.('input,textarea,select,[contenteditable="true"]');
+ const modifier=event.metaKey||event.ctrlKey;
+ if(modifier&&!typing&&event.key.toLowerCase()==='a'){event.preventDefault();selectedIds=new Set(assets().filter(assetVisible).map(a=>a.id));selectedId=selectedIds.size===1?[...selectedIds][0]:null;render();return;}
+ if(modifier&&!typing&&event.key.toLowerCase()==='z'){event.preventDefault();applyHistory(event.shiftKey?'redo':'undo');return;}
+ if(modifier&&!typing&&event.key.toLowerCase()==='y'){event.preventDefault();applyHistory('redo');return;}
+ if(!typing&&(event.key==='Enter'||event.key===' ')&&event.target?.closest?.('.asset-card')){event.preventDefault();chooseAsset(event.target.closest('.asset-card').dataset.assetId,modifier||event.shiftKey);return;}
+ if(event.key==='Escape'){if(connectFrom||settingsOpen||boardSettingsOpen||helpOpen||selectedIds.size){resetSelection();settingsOpen=boardSettingsOpen=helpOpen=false;render();}}
+ if(modifier&&event.key.toLowerCase()==='s'){event.preventDefault();commit(false);notify('Saved locally. Use Backup to export a portable file.');}
 });
 window.addEventListener('beforeunload',clearUrls);
 render();

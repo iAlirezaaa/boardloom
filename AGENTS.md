@@ -25,6 +25,7 @@ Build a reliable, intuitive, extensible **image-first production management syst
 ## Architecture and naming
 - `src/core.mjs`: pure domain and validation.
 - `src/storage.mjs`: local metadata, blob persistence, backup.
+- `src/history.mjs`: bounded in-memory session undo/redo; never claim cross-session persistence.
 - `src/app.mjs`: runtime interaction and UI.
 - `src/styles.css`: current design system.
 - `docs/`: authoritative decisions and product scope; keep in English for consistency. Persian overview lives in `README.fa.md`.

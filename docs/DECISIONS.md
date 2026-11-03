@@ -21,3 +21,7 @@ A single source of truth for foundational product decisions. Agents must append,
 5. Test plan and measurable acceptance criteria.
 6. Rollback plan and compatibility impact.
 7. Explicit user approval before destructive or material product-direction changes.
+
+| D-009 | 2026-11-03 | Implement undo/redo as bounded session-only workspace snapshots; keep metadata schema version 1 | Reversible edits without a risky storage migration | Upgrade journal persistence only with recovery tests |
+| D-010 | 2026-11-03 | Provide local CSV export with formula injection protection | Production reporting without automatic external data sharing | Review if export format or privacy changes |
+| D-011 | 2026-11-03 | Retain media blobs during asset/board removal so Undo remains possible | Protect production images against immediate data loss | Explicit approval and safe backup before cleanup policy |

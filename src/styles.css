@@ -6,3 +6,31 @@
 @media(max-width:1250px){.sidebar{width:210px;flex-basis:210px}.detail-panel{width:300px;flex-basis:300px}.search-box input{width:105px}.board-toolbar{padding-left:19px;padding-right:16px}.board-tools{gap:6px}.brand{margin-bottom:36px}.category-tag{display:none}.subtle-btn span{display:none}}
 @media(max-width:1020px){.sidebar{width:74px;flex-basis:74px;padding:21px 9px}.brand{padding:0;justify-content:center}.brand>div:nth-child(2),.side-overline,.sidebar-section-head,.project-switch,.board-item span,.board-item i,.side-divider,.sidebar-bottom,.status-list,.sidebar-section-head{display:none}.board-item{justify-content:center}.board-list{margin-top:16px}.detail-panel{width:292px;flex-basis:292px}.search-box input{width:85px}.board-title p{max-width:280px}}
 @media(max-width:850px){.board-tools .filter-select{display:none}.board-title h1{font-size:17px}.primary-btn{padding:9px;font-size:11px}}
+
+/* Production workflow features (v0.2). Intentionally additive to the v0.1 design system. */
+.workflow-progress{height:5px;border-radius:999px;display:flex;overflow:hidden;gap:2px;margin-top:10px;background:#333542;max-width:490px}
+.workflow-progress span{min-width:0;transition:flex .2s ease}
+.view-toggle{display:flex;gap:2px;background:#22242e;border:1px solid #383944;padding:3px;border-radius:9px;white-space:nowrap}
+.view-toggle button{background:transparent;border:0;color:#a8a6b5;font-size:11px;font-weight:650;padding:7px 9px;border-radius:6px}
+.view-toggle button.active{color:#f4f0ff;background:#424054}
+.view-toggle button:hover{color:#fff}
+.toolbar-button{font-size:11px;white-space:nowrap;height:38px;padding:8px 10px}
+.table-stage{display:flex;flex-direction:column;flex:1;min-height:0;background:#161821}
+.table-heading{display:flex;align-items:center;gap:15px;min-height:64px;border-bottom:1px solid #30323e;padding:12px 28px}
+.table-heading strong{font-size:15px;font-weight:680;letter-spacing:-.2px}
+.table-heading span{color:#9293a4;font-size:11px;margin-right:auto}
+.table-scroll{flex:1;min-height:0;overflow:auto}
+.task-table{width:100%;border-collapse:collapse;text-align:left;min-width:790px}
+.task-table th{position:sticky;top:0;z-index:2;background:#22242e;color:#999baa;text-transform:uppercase;letter-spacing:.7px;font-size:10px;font-weight:750;height:45px;padding:10px 15px;border-bottom:1px solid #3a3b48}
+.task-table td{padding:11px 15px;color:#c3c4d0;font-size:12px;border-bottom:1px solid #313440;vertical-align:middle}
+.task-table tbody tr:hover{background:#20232d}
+.task-table tbody tr.row-selected{background:#2b2a3b}
+.table-image{width:68px;height:45px;background:#2b2d36;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.table-image img{width:100%;height:100%;object-fit:cover}
+.table-no-image{font-size:10px;color:#858799}
+.table-asset-name{display:block;text-align:left;padding:0;color:#ebeaf5;background:transparent;border:0;font-size:13px;font-weight:650;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.table-asset-name:hover{color:#c4b6ff;text-decoration:underline}
+.task-table td small{display:block;margin-top:6px;color:#818594;font-size:10px}
+.table-status{border:1px solid #464856;border-left-width:4px;background:#282a35;color:#eceaf5;padding:8px 5px;border-radius:7px;max-width:140px;font-size:11px}
+.table-empty{text-align:center;padding:68px 22px!important;color:#9a9baa!important}
+@media(max-width:1450px){.board-toolbar{flex-wrap:wrap}.board-tools{flex-wrap:wrap;justify-content:flex-end}}

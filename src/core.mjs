@@ -78,7 +78,7 @@ export function removeBoard(project,id) {
   return [...removedIds];
 }
 export function newAsset(boardId, name, statusId, position, opts={}) {
-  return {id:uid('asset'),boardId,name,description:'',statusId,category:'Reference',sourcePath:opts.sourcePath||name,tags:[],custom:{},position:{x:Math.max(0,position.x),y:Math.max(0,position.y)},createdAt:now(),...(opts.imageKey?{imageKey:opts.imageKey}:{})};
+  return {id:uid('asset'),boardId,name,description:'',statusId,category:'Reference',sourcePath:opts.sourcePath??name,tags:[],custom:{},position:{x:Math.max(0,position.x),y:Math.max(0,position.y)},createdAt:now(),...(opts.imageKey?{imageKey:opts.imageKey}:{})};
 }
 export function connect(project,boardId,from,to) {
   if(from===to)throw new Error('An item cannot link to itself');
@@ -130,4 +130,42 @@ export function countsByStatus(project,boardId) {
   const counts=Object.fromEntries(project.statuses.map(s=>[s.id,0]));
   for(const a of project.assets)if(a.boardId===boardId&&counts[a.statusId]!==undefined)counts[a.statusId]++;
   return counts;
+}
+
+/** Edit a set of assets with one validated operation. Changes never touch binary image data. */
+export function batchUpdateAssets(project, sourceBoardId, ids, changes) {
+  if (!Array.isArray(ids) || !ids.length || new Set(ids).size !== ids.length) throw new Error('Select at least one unique asset');
+  const source = project.boards.find(b => b.id === sourceBoardId);
+  if (!source) throw new Error('Source board not found');
+  const selected = ids.map(id => project.assets.find(a => a.id === id && a.boardId === sourceBoardId));
+  if (selected.some(a => !a)) throw new Error('Selection includes an unknown asset');
+  const keys = Object.keys(changes);
+  if (!keys.length || keys.some(k => !['statusId', 'category', 'boardId'].includes(k))) throw new Error('Unsupported batch edit');
+  if ('statusId' in changes && !project.statuses.some(s => s.id === changes.statusId)) throw new Error('Unknown status');
+  if ('category' in changes && (typeof changes.category !== 'string' || changes.category.length > 100)) throw new Error('Invalid category');
+  if ('boardId' in changes && !project.boards.some(b => b.id === changes.boardId)) throw new Error('Unknown destination board');
+  for (const asset of selected) {
+    for (const key of keys) asset[key] = changes[key];
+  }
+  if ('boardId' in changes && changes.boardId !== sourceBoardId) {
+    const moved = new Set(ids);
+    project.edges = project.edges.filter(e => !moved.has(e.from) && !moved.has(e.to));
+  }
+  return selected.length;
+}
+
+/** Explicit CSV export for production reporting; no image bytes or remote transfer. */
+export function exportBoardCsv(project, boardId, assetIds=null) {
+  if (!project.boards.some(b => b.id === boardId)) throw new Error('Unknown board');
+  const selected = assetIds === null ? null : new Set(assetIds);
+  const fields = project.fields;
+  const headers = ['ID', 'Name', 'Status', 'Category', 'Description', 'Source path', 'Tags', ...fields.map(f => f.name)];
+  const csvCell = value => { const raw=String(value ?? ''); const safe=/^[\s\u0000-\u001f]*[=+@-]/.test(raw) ? '\''+raw : raw; return `"${safe.replace(/"/g, '""')}"`; };
+  const lines = [headers.map(csvCell).join(',')];
+  for (const asset of project.assets) {
+    if (asset.boardId !== boardId || (selected && !selected.has(asset.id))) continue;
+    const row = [asset.id, asset.name, project.statuses.find(s => s.id === asset.statusId)?.name || '', asset.category, asset.description, asset.sourcePath, asset.tags.join(', '), ...fields.map(f => asset.custom[f.id] ?? '')];
+    lines.push(row.map(csvCell).join(','));
+  }
+  return '\uFEFF' + lines.join('\r\n') + '\r\n';
 }

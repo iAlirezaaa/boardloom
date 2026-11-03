@@ -4,9 +4,17 @@
 - Projects and categorized boards, spatial canvas cards, status borders, custom status labels/colors, inspector, editable custom fields, directional arrows.
 - Drag/drop image import, on-device blob storage, search/filter, source/storage paths as metadata, backup/restore, native domain tests and CI config.
 
-## v0.2 — production-ready local boards (highest priority)
-- [ ] Persistent undo/redo journal and safe deletion/archive (soft delete, recoverable trash).
-- [ ] Move/resize/rotate cards, multi-select, groups, snap, auto-layout, better navigation and keyboard shortcuts.
+## v0.2.0 — delivered production workflow slice (2026-11-03)
+- [x] Switchable canvas and table views over one data model; inline status editing and owner/deadline overview.
+- [x] Select all visible tasks or Ctrl/Cmd+click to multi-select; bulk status/category/move operations.
+- [x] Add tasks before an image exists; export CSV reports with custom metadata and formula protection.
+- [x] Bounded session Undo/Redo for metadata changes and canvas drags; blob-retaining removal permits session recovery.
+- [x] Workflow progress bar and search across custom field values.
+- [x] Unit and headless DOM smoke coverage for these operations.
+
+## v0.2 — remaining production-ready local board work (highest priority)
+- [ ] Persistent cross-reload undo/redo journal and trash/explicit image blob garbage collection (session-only Undo now exists).
+- [ ] Move/resize/rotate cards, groups, snap, auto-layout, better navigation and full keyboard accessibility (multi-select and shortcuts partly delivered).
 - [ ] Real folder ingestion with user-granted permissions, source path resolution, change detection, file relocation strategy; desktop adapter when web APIs are insufficient.
 - [ ] Create/edit/delete visual connectors with labels, edge types, routing and relation metadata.
 - [ ] Export board as high-resolution PNG/SVG and print-friendly storyboard PDF.

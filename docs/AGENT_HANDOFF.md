@@ -1,50 +1,33 @@
-# Agent Handoff — 2026-11-03
+# Agent Handoff — 2026-11-03 (v0.2.0)
 
-## Current state
-Boardloom v0.1 is a **working local, zero-runtime-dependency browser starter**. It is not yet a hosted or shared production service. The complete runnable source and tests are in this project directory.
+## Product goal and protected features
+Read `AGENTS.md`, `docs/PRODUCT_VISION.md`, `docs/DECISIONS.md` first. Preserve user-defined status border colors, boards, free canvas, editable custom fields, explicit paths and directional image links. Do not silently discard prior ideas.
 
-## What was built
-- Domain operations and invariant tests in `src/core.mjs`, `tests/core.test.mjs`.
-- Responsive desktop-first dark UI with sidebar, image canvas, inspector, settings, and zoom/pan/drag in `src/app.mjs` and `src/styles.css`.
-- Image storage and complete backup/restore in `src/storage.mjs`.
-- A secure-ish local HTTP server in `server.mjs`, plus sample illustrations and a CI workflow.
-- English and Persian READMEs, protected product decisions, product spec and development roadmap.
+## Delivered and verified in this update
+- Shared-data canvas/table switch with inline table status editing, status progress indicator.
+- Image-less tasks (+ Task) so shots can be planned before concepts exist.
+- Ctrl/Cmd+click and Ctrl/Cmd+A multi-selection with bulk status/category edits and cross-board moves.
+- Bounded session-only Undo/Redo of workspace metadata (Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z, Ctrl/Cmd+Y) and button controls.
+- CSV export of current board metadata, including custom fields with safe escaping and spreadsheet formula mitigation.
+- Search now includes custom metadata values.
+- `npm run check`: **13/13** tests passed (including table smoke with DOM stubs). HTTP server serves the app locally; full interactive browser E2E was not verified in this environment due Chromium runner hanging.
 
-## Test evidence
-At handoff: `npm run check` passed **7/7** Node domain/render-smoke tests and syntax checks. HTTP file server returned HTTP 200 with CSP headers. Full browser E2E was **not verified** because the execution environment blocks headless Chromium navigation with `ERR_BLOCKED_BY_ADMINISTRATOR` even when requests are locally intercepted. Treat browser testing as an immediate next action, not as a passed test.
+## Important behaviors / caveats
+- No data migration: `version: 1` remains valid. All previous v0.1 workspaces and backups are compatible.
+- Undo/Redo is **session-only**; reload clears history. Images stay in IndexedDB on delete, so Undo can recover them. This can accumulate orphaned blobs over time; implement explicit backup-aware cleanup before promising secure/permanent deletion.
+- Cross-board bulk move removes affected arrows and can be reversed with Undo. No unapproved filesystem access or server sync is introduced.
+- CSV covers **metadata**, not embedded image files. Use existing Backup for complete portable workspaces.
 
-## Known first fixes
-1. Run an actual browser UX test in a normal development environment. Verify initial display, sample images, card selection, drag/pan, status settings, multi-file upload, IndexedDB persistence, image backup/restore and keyboard controls. Fix defects before adding features.
-2. Implement true unbounded canvas coordinates and replace SVG fixed 6000×6000 space if large/many boards are expected.
-3. Tighten import schema validation, collisions and storage quotas; make image-import and restore atomic.
-4. Add card size control, manual arrow removal/labels, selection/undo/redo and safer trash.
-5. Build full localization (`fa` RTL + `en`) and Tauri desktop path/folder support.
-6. Evaluate React Flow MIT as a plugin/adapted renderer, retaining core/domain data definitions.
-7. Review and execute v0.2 roadmap, one tested PR at a time.
+## Next high-value steps
+1. Real browser automation for image upload/reload/multi-select/table/Undo and accessibility; fix any discovered DOM regressions.
+2. Persistent trash/recovery, safe blob GC and storage quota experience.
+3. Labels/removal for connections, stable arrow routing and drag grouping.
+4. Multi-card resize and layout presets; shot template setup / CSV import with reviewed schema.
+5. Tauri desktop adapter, only with capability-scoped user-granted directories.
 
-## Repo publication limitation
-The available GitHub connector in this session supports **writing files and commits inside existing repositories** but **does not expose creating a new repository**. The requested `iAlirezaaa/boardloom` repository was checked and was **not found** on 2026-11-03. Therefore these project sources are prepared for upload, but not published to GitHub in this handoff. Do not claim a GitHub repository or remote commit exists without verifying it. After the owner creates an empty repo and grants the existing GitHub connector access, publish the prepared files, preserving `AGENTS.md`, docs and CI.
-
-## Publish sequence
+## Test and release
 ```bash
-cd boardloom
-git init
-git branch -M main
-git add .
-git commit -m "feat: initialize Boardloom visual production workspace"
-git remote add origin https://github.com/iAlirezaaa/boardloom.git
-git push -u origin main
+npm run check
+npm run dev
 ```
-
-Create an empty GitHub repo of that name first; these commands assume that the user has Git and GitHub authentication configured. No user credentials should be embedded in code, docs or scripts.
-
-## Engineering cautions
-- User-generated path strings do not mean the browser can read local files automatically.
-- Protect image privacy: don't introduce remote APIs, analytics, uploads or automatic AI processing by default.
-- Image URLs and blob lifetimes must be managed carefully; revoke object URLs after removal.
-- Preserve sample assets or replace them with appropriately licensed self-authored media.
-- Text fields and imported JSON are untrusted. Escape rendered strings, validate URIs and refuse potentially active image formats.
-- Follow change-gating requirements documented in `AGENTS.md` and `docs/DECISIONS.md`.
-
-## Product intent to preserve
-Status-colored image border; user-defined statuses and custom fields; boards with categories and storage paths; image detail inspector; free visual layout; arrows/relationships; scalable project management. Future extensions must build on these rather than replacing them.
+GitHub path: `https://github.com/iAlirezaaa/boardloom`. Merge/change policy: never rewrite protected concepts without user approval and a before/after + rollback plan.
