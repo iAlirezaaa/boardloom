@@ -1,5 +1,9 @@
 # Boardloom
 
+![Boardloom visual production workspace — color-coded image cards, connected storyboard shots, and asset details](docs/assets/boardloom-preview.svg)
+
+*Product UI preview using the included sample storyboard assets.*
+
 **Visual project management for image-first production.**
 
 Boardloom combines the spatial freedom of a reference board (in the spirit of PureRef) with the structured workflow of a production tracker and the visual connections of a node canvas. It is designed for film, animation, motion design, concept art, creative agencies, AI-assisted production, and any team that manages work through images.
