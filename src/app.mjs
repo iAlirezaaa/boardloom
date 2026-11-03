@@ -205,7 +205,7 @@ async function addFiles(files,position){
     await putImage(a.imageKey,file);
     p.assets.push(a);added++;
   }catch(e){notify(`Could not store ${file.name}: ${e.message}`,true);}}
-  if(added){commit();notify(`${added} image${added===1?'':'s'} added to ${b.name}.`);}
+  if(added){if(viewMode==='table')viewMode='canvas';commit();notify(`${added} image${added===1?'':'s'} added to ${b.name}.`);}
 }
 function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const anchor=document.createElement('a');anchor.href=url;anchor.download=name;document.body.append(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
 function runClick(target){
@@ -291,7 +291,7 @@ app.addEventListener('click',(event)=>{
   }
 });
 app.addEventListener('change',(event)=>{
-  if(event.target.id==='image-file-picker'){const stage=document.getElementById('stage');const bounds=stage.getBoundingClientRect();void addFiles(event.target.files,toWorld(bounds.left+bounds.width/2-130,bounds.top+bounds.height/2-100));event.target.value='';return;}
+  if(event.target.id==='image-file-picker'){const stage=document.getElementById('stage');const bounds=stage?.getBoundingClientRect?.();const position=bounds?toWorld(bounds.left+bounds.width/2-130,bounds.top+bounds.height/2-100):{x:160+(assets().length%3)*350,y:150+Math.floor(assets().length/3)*280};void addFiles(event.target.files,position);event.target.value='';return;}
   if(event.target.id==='backup-file-picker'){
     const file=event.target.files[0];event.target.value='';if(!file)return;
     if(!confirm('Restore will replace your current workspace. Export a backup first if you need it. Continue?'))return;

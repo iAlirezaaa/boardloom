@@ -7,13 +7,14 @@ test('table workflow, row status updates and Undo are wired in the browser entry
   const toast={textContent:'',className:''};
   globalThis.localStorage={getItem(){return saved||null;},setItem(_k,v){saved=v;}};
   globalThis.window={addEventListener(){}};
-  globalThis.document={getElementById(id){return id==='app'?el:toast;},addEventListener(){}};
+  globalThis.document={getElementById(id){return id==='app'?el:id==='stage'?null:toast;},addEventListener(){}};
   await import('../src/app.mjs');
   assert.match(markup,/view-table/);
   const click=(action,id)=>handlers.click({stopPropagation(){},target:{closest(selector){return selector==='[data-click]'?{dataset:{click:action,id}}:null;}}});
   click('view-table');
   assert.match(markup,/Production overview/);
   assert.match(markup,/table-asset-name/);
+  assert.doesNotThrow(()=>handlers.change({target:{id:'image-file-picker',files:[],value:''}}));
   handlers.change({target:{dataset:{change:'row-status',id:'demo-b'},value:'approved'}});
   assert.equal(JSON.parse(saved).projects[0].assets.find(a=>a.id==='demo-b').statusId,'approved');
   click('undo');
